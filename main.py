@@ -20,9 +20,8 @@ app.add_middleware(
     secret_key=os.getenv("SESSION_SECRET")
 )
 
-# templates = Jinja2Templates(directory="templates")
-
 # Landing page
+
 @app.get("/", response_class=HTMLResponse)
 def landing(request: Request):
     return templates.TemplateResponse(
@@ -30,6 +29,7 @@ def landing(request: Request):
         {"request": request}
     )
 # Home page after successfull login
+
 @app.get("/home", response_class=HTMLResponse)
 def home(request: Request):
 
@@ -40,8 +40,60 @@ def home(request: Request):
         "home.html",
         {"request": request}
     )
+# Login Details
+
+@app.get("/login", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse(
+        "login.html",
+        {"request": request}
+    )
+
+@app.post("/login")
+def login_user(
+    request: Request,
+    gym_code: str = Form(...),
+    username: str = Form(...),
+    password: str = Form(...)
+):
+    conn = database.get_connection()
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT id, password_hash FROM users WHERE gym_code=%s AND username=%s",
+        (gym_code, username)
+    )
+    user = cur.fetchone()
+    conn.close()
+
+    if not user:
+        return templates.TemplateResponse(
+            "login.html",
+            {"request": request, "error": "Invalid credentials"}
+        )
+
+    user_id, password_hash = user
+
+    if not auth.verify_password(password, password_hash):
+        return templates.TemplateResponse(
+            "login.html",
+            {"request": request, "error": "Invalid credentials"}
+        )
+
+    # Successful login → store user_id in session
+    request.session["user_id"] = user_id
+
+    return RedirectResponse("/home", status_code=303)
 
 # Registration page
+
+@app.get("/register", response_class=HTMLResponse)
+def register_page(request: Request):
+    return templates.TemplateResponse(
+        "register.html",
+        {"request": request}
+    )
+
 @app.post("/register")
 def register_user(
     gym_code: str = Form(...),
