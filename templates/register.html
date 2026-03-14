@@ -1,0 +1,38 @@
+<html>
+<head>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<h2>Register</h2>
+
+<form method="post" action="/register">
+
+<input name="gym_code" placeholder="Gym Code" required>
+
+<input name="username" placeholder="Username" required>
+
+<input name="password" type="password" placeholder="Password" required>
+
+<input name="age" type="number" placeholder="Age">
+
+<label>Sex</label>
+
+<select name="sex" required>
+<option value="">Select</option>
+<option value="M">Male</option>
+<option value="F">Female</option>
+<option value="O">Other</option>
+</select>
+
+<input name="height" placeholder="Height (cm)">
+
+<br><br>
+
+<button type="submit">Register</button>
+
+</form>
+
+</body>
+</html>
