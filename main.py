@@ -29,5 +29,3 @@ def landing(request: Request):
         {"request": request}
     )
 
-from database import Base, engine
-Base.metadata.create_all(bind=engine)
