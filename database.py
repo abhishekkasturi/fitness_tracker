@@ -14,6 +14,7 @@ def init_db():
     conn = get_connection()
     cur = conn.cursor()
 
+    # Users table
     cur.execute("""
     CREATE TABLE IF NOT EXISTS users(
         id SERIAL PRIMARY KEY,
@@ -26,6 +27,36 @@ def init_db():
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
         UNIQUE(gym_code, username)
+    )
+    """)
+
+    # Weekly metrics table
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS weekly_metrics(
+        id SERIAL PRIMARY KEY,
+
+        user_id INTEGER REFERENCES users(id),
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        weight REAL,
+        chest REAL,
+        biceps REAL,
+        waist REAL,
+        thigh REAL,
+        calf REAL,
+
+        bench REAL,
+        squat REAL,
+        deadlift REAL,
+
+        pushups INTEGER,
+        pullups INTEGER,
+        plank INTEGER,
+
+        vo2max REAL,
+        resting_hr INTEGER,
+        hrv REAL
     )
     """)
 
