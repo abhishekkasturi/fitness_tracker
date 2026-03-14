@@ -103,22 +103,27 @@ def register_user(
     sex: str = Form(...),
     height: float = Form(...)
 ):
+    try:
+        conn = database.get_connection()
+        cur = conn.cursor()
 
-    conn = database.get_connection()
-    cur = conn.cursor()
+        password_hash = auth.hash_password(password)
 
-    password_hash = auth.hash_password(password)
+        cur.execute(
+            """
+            INSERT INTO users (gym_code, username, password_hash, age, sex, height)
+            VALUES (%s,%s,%s,%s,%s,%s)
+            """,
+            (gym_code, username, password_hash, age, sex, height)
+        )
 
-    cur.execute(
-        """
-        INSERT INTO users (gym_code, username, password_hash, age, sex, height)
-        VALUES (%s,%s,%s,%s,%s,%s)
-        """,
-        (gym_code, username, password_hash, age, sex, height)
-    )
+        conn.commit()
+        conn.close()
 
-    conn.commit()
-    conn.close()
+        return RedirectResponse("/login", status_code=303)
 
-    return RedirectResponse("/login", status_code=303)
-
+    except Exception as e:
+        return templates.TemplateResponse(
+            "register.html",
+            {"request": Request, "error": f"Error: {str(e)}"}
+        )
